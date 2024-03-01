@@ -2,6 +2,8 @@ from django.db import models
 
 class Turtle(models.Model): # Track individual turtles
     name = models.CharField(max_length=20)
+    worldID = models.IntegerField(default=0, unique=True)
+    ComputerID = models.IntegerField(default=0, unique=True)
     status = models.BooleanField() # true = online, false = offline
     position = models.CharField(max_length=20) #probably don't want position represented as a string
 

@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from .models import Turtle
 from django.template import loader
 from django.core.exceptions import ObjectDoesNotExist
+import uuid
 
 def index(request):
     turtles_list = Turtle.objects.all()
@@ -12,7 +13,6 @@ def index(request):
     template = loader.get_template("controller/index.html")
     return HttpResponse(template.render(context, request))
 
-
 def detail(request, turtle_name):
     try:
         turtle = Turtle.objects.get(name=turtle_name)
@@ -21,4 +21,15 @@ def detail(request, turtle_name):
     return render(request, "controller/detail.html", {"turtle": turtle})
 
 def register(request):
-    return render(request, "controller/register.html")
+    register_link = str(uuid.uuid4())
+    context = {
+        "register_link" : register_link
+    }
+    return render(request, "controller/register.html", context)
+
+def register_turtle(request):
+    if request.method == "POST":
+        computer = request.POST.get("computerID")
+        Turtle.objects.create(name='STEVE', computerID=computer, worldID=0, status=True, position='no')
+        return JsonResponse({"status": "registered"})
+    return JsonResponse({"error": "Invalid request"}, status=400)

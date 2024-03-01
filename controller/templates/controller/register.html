@@ -1,2 +1,5 @@
 <h1> Register a turtle!</h1>
+{% if register_link %}
+    <a href="{% url 'controller:register_turtle' register_link %}">{{ register_link }}</a>
+{% endif %}
 <p><a href="{% url 'controller:index' %}">Go back</a></p>
