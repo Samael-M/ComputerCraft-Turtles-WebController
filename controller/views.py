@@ -2,19 +2,21 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from .models import Turtle
 from django.template import loader
+from django.core.exceptions import ObjectDoesNotExist
 
 def index(request):
     turtles_list = Turtle.objects.all()
-    steve = Turtle.objects.get(pk=1)
-    template = loader.get_template("controller/index.html")
-    context= {
-        "turtles_list" : turtles_list,
-        "steve" : steve
+    try:
+        steve = Turtle.objects.get(pk=2)
+    except ObjectDoesNotExist:
+        steve = None  # Or set it to a default value if you have one
+    context = {
+        "turtles_list": turtles_list,
+        "steve": steve
     }
+    template = loader.get_template("controller/index.html")
     return HttpResponse(template.render(context, request))
 
-    # output = ", ".join([t.name for t in turtles_list])
-    # return HttpResponse(output)
 
 def detail(request, turtle_name):
     try:
