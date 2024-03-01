@@ -6,3 +6,4 @@ settings.py
 *.log
 .DS_Store
 .env
+stuff.txt
