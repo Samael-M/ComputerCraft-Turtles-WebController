@@ -7,3 +7,4 @@ urlpatterns = [
     path("controller/", include("controller.urls")),
     path("admin/", admin.site.urls),
 ]
+#update
