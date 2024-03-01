@@ -6,13 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 def index(request):
     turtles_list = Turtle.objects.all()
-    try:
-        steve = Turtle.objects.get(pk=2)
-    except ObjectDoesNotExist:
-        steve = None  # Or set it to a default value if you have one
     context = {
-        "turtles_list": turtles_list,
-        "steve": steve
+        "turtles_list": turtles_list
     }
     template = loader.get_template("controller/index.html")
     return HttpResponse(template.render(context, request))
