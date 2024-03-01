@@ -1,0 +1,9 @@
+<h1>{{ turtle.name }}</h1>
+<ul>
+{% if turtle.status %}
+    <p>Turtle is online</p>
+{% else %}
+    <p>Turtle is offline</p>
+{% endif %}
+</ul>
+<p><a href="{% url 'controller:index' %}">Go back</a></p>

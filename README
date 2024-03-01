@@ -1,0 +1,8 @@
+Current idea:
+
+url/controllers/                Base URL, list turtles you can work with, along side a way to register new turtles
+            /'register'         Clicking a name of turtle, will open page to interact with that turtle and show its status
+            /'turtle name'      From home, clicking register will bring you to page to register turtle
+
+
+How do we want to do the registration process?

@@ -1,0 +1,10 @@
+{% if turtles_list %}
+    <ul>
+    {% for turtle in turtles_list %}
+        <li><a href="{% url 'controller:detail' turtle.name %}">{{ turtle.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Turtles are available</p>
+{% endif %}
+<p><a href="{% url 'controller:register' %}">Register</a></p>
