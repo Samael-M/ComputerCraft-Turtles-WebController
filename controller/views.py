@@ -3,7 +3,9 @@ from django.http import HttpResponse, Http404, JsonResponse
 from .models import Turtle
 from django.template import loader
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.csrf import csrf_exempt
 import uuid
+import json
 
 def index(request):
     turtles_list = Turtle.objects.all()
@@ -27,9 +29,11 @@ def register(request):
     }
     return render(request, "controller/register.html", context)
 
-def register_turtle(request):
+@csrf_exempt
+def register_turtle(request, register_link):
     if request.method == "POST":
-        computer = request.POST.get("computerID")
-        Turtle.objects.create(name='STEVE', computerID=computer, worldID=0, status=True, position='no')
+        data = json.loads(request.body.decode('utf-8'))
+        computer = data.get("computerID")
+        Turtle.objects.create(name='STEVE2', worldID=0, computerID=computer, status=True, position='no')
         return JsonResponse({"status": "registered"})
     return JsonResponse({"error": "Invalid request"}, status=400)
