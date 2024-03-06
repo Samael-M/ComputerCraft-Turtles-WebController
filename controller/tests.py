@@ -28,14 +28,17 @@ class TokenModelTests(TestCase):
     def test_token_expired(self):
         token = create_token(hours=-1, minutes=0, seconds=-1)
         self.assertTrue(token.expired())
+
+    ####################################
     
     def test_registration_rejected(self):
         """
-        Request made to registration page without valid token are rejected
+        Request made to registration page without valid token are rejected with proper JSON response and status = 400
         """
         token = create_token(hours=-1, minutes=0, seconds=-1)
-        url = reverse("controller:register_turtle", kwargs={"register_link": str(token.id)})
+        url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
         response = self.client.post(url)
+
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Invalid token!"})
 
@@ -51,9 +54,12 @@ class TokenModelTests(TestCase):
             "status": True,
         }
         
-        url = reverse("controller:register_turtle", kwargs={"register_link": str(token.id)})
+        url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
         response = self.client.post(url, data=json.dumps(request_data), content_type='application/json')
         response_data = json.loads(response.content)
+
+        token_cleared = not Token.objects.filter(id=token.id).exists()
+        self.assertTrue(token_cleared)
 
         self.assertIn('id', response_data)
         try:
@@ -61,7 +67,6 @@ class TokenModelTests(TestCase):
             id_is_valid = True
         except ValueError:
             id_is_valid = False
-        
         self.assertEquals(id_is_valid, True)
 
     def test_registration_duplicate(self):
@@ -77,7 +82,7 @@ class TokenModelTests(TestCase):
         }
         Turtle.objects.create(id=uuid.uuid4(), name=data['name'], worldID=data['worldID'], computerID=data['computerID'], status=data['status'])
         
-        url = reverse("controller:register_turtle", kwargs={"register_link": str(token.id)})
+        url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
 
         self.assertEqual(response.status_code, 409)

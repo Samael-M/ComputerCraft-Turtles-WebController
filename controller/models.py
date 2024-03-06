@@ -39,7 +39,7 @@ class Log(models.Model): # log data/output received from turtle
     log_text = models.TextField()
     timestamp = models.DateTimeField()
 
-#This token is for validating registration links
+#Tokens is for validating registration links
 class Token(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     date = models.DateTimeField()

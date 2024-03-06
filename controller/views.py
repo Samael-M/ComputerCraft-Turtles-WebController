@@ -10,7 +10,9 @@ import json
 
 from .models import Turtle, Token
 
-
+"""
+Main view/home page. Links to detail view for bots and to the registration page
+"""
 def index(request):
     turtles_list = Turtle.objects.all()
     context = {
@@ -19,6 +21,9 @@ def index(request):
     template = loader.get_template("controller/index.html")
     return HttpResponse(template.render(context, request))
 
+"""
+View details of a particular bot
+"""
 def detail(request, turtle_name):
     try:
         turtle = Turtle.objects.get(name=turtle_name)
@@ -26,6 +31,9 @@ def detail(request, turtle_name):
         raise Http404("Turtle does not exist")
     return render(request, "controller/detail.html", {"turtle": turtle})
 
+"""
+Regisration page. Used to generate registration codes for user 
+"""
 def register(request):
     if(request.method == "POST"):
         register_code = str(uuid.uuid4())
@@ -40,6 +48,9 @@ def register(request):
     }
     return render(request, "controller/register.html", context)
 
+"""
+Not a viewable  link, handles registration request from bots
+"""
 @csrf_exempt
 def register_turtle(request, register_link):
 
