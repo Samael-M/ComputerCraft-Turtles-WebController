@@ -31,12 +31,23 @@ class TokenModelTests(TestCase):
 
     ####################################
     
-    def test_registration_rejected(self):
+    def test_registration_expired_token(self):
         """
-        Request made to registration page without valid token are rejected with proper JSON response and status = 400
+        Request made to registration page without expired token are rejected with proper JSON response and status = 400
         """
         token = create_token(hours=-1, minutes=0, seconds=-1)
         url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Token has expired!"})
+
+    def test_registration_invalid_token(self):
+        """
+        Request made to registration page without invalid token are rejected with proper JSON response and status = 400
+        """
+        token = uuid.uuid4()
+        url = reverse("controller:register_turtle", kwargs={"register_link": token})
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, 400)

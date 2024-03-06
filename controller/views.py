@@ -60,7 +60,7 @@ def register_turtle(request, register_link):
         except ObjectDoesNotExist:
             return JsonResponse({"error": "Invalid token!"}, status=400)
         
-        if(token.expired()):
+        if(not token.expired()):
             data = json.loads(request.body.decode('utf-8'))
             serverID = str(uuid.uuid4())
 
