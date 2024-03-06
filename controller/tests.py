@@ -39,6 +39,9 @@ class TokenModelTests(TestCase):
         url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
         response = self.client.post(url)
 
+        token_cleared = not Token.objects.filter(id=token.id).exists()
+        self.assertTrue(token_cleared)
+
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Token has expired!"})
 
