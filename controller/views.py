@@ -49,18 +49,19 @@ def register_turtle(request, register_link):
             data = json.loads(request.body.decode('utf-8'))
             serverID = str(uuid.uuid4())
 
-            compName = data.get("name")
             computer = data.get("computerID")
             world = data.get("worldID")
+            if(Turtle.objects.filter(worldID=world, computerID=computer).exists()):
+                return JsonResponse({"error": "This turtle is already registered!"}, status=409)
+            
+            name = data.get("name")
             stat = data.get("status")
-            pos = data.get("position")
 
-            # django.db.utils.IntegrityError: NOT NULL constraint failed: controller_turtle.name
-            #Turtle.objects.create(id = serverID, name=compName, worldID=world, computerID=computer, status=stat, position=pos)
+            Turtle.objects.create(id = serverID, name=name, worldID=world, computerID=computer, status=stat)
             token.delete()
             return JsonResponse({"id": serverID})   
         else:
             return JsonResponse({"error": "Invalid token!"}, status=400)
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-#curl -X POST http://localhost:8000/controller/register// -H "Content-Type: application/json" \ -d '{"name":"TestBot2", "computerID":"12234", "worldID":0, "status":True, "position":"0,0,0"}'
+#curl -X POST http://localhost:8000/controller/register// -H "Content-Type: application/json" \ -d '{"name":"TestBot2", "computerID":"12234", "worldID":0, "status":True}'

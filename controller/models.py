@@ -12,7 +12,6 @@ class Turtle(models.Model): # Track individual turtles
 
     name = models.CharField(max_length=20)
     status = models.BooleanField() # true = online, false = offline
-    position = models.CharField(max_length=20) # probably don't want position represented as a string
 
     class Meta:
         unique_together = (('computerID', 'worldID'),) #neither indivudally should necessarily be unique, but together they must
@@ -20,8 +19,6 @@ class Turtle(models.Model): # Track individual turtles
     # Do I need these or can turtle.status be used elsewhere in code?
     def is_online(self):
         return self.status
-    def location(self):
-        return self.position
     def whoami(self):
         return self.name
 
