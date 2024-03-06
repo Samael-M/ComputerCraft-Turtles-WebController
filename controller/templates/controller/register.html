@@ -1,5 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
 <h1> Register a turtle!</h1>
-{% if register_link %}
-    <a href="{% url 'controller:register_turtle' register_link %}">{{ register_link }}</a>
+<p>Generate a one time code. Give code to turtle to register</p>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="getCode">{% if code %}Generate New Code{% else%}Generate Code{% endif %}</button>
+    </form>
+{% if code %}
+    <p id="codeToCopy">{{ code }}</p>
+    <button onclick="copyCodeToClipboard()">Copy to Clipboard</button>
 {% endif %}
 <p><a href="{% url 'controller:index' %}">Go back</a></p>
+</body>
+</html>
+
+<script>
+function copyCodeToClipboard() {
+    var codeToCopy = document.getElementById("codeToCopy").innerText;
+    navigator.clipboard.writeText(codeToCopy)
+        .then(() => {
+            alert("Code successfully copied to clipboard!");
+        })
+        .catch((error) => {
+            console.error("Error copying text: ", error);
+            alert("Failed to copy code.");
+        });
+}
+</script>
+
+
+ 
