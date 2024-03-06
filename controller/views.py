@@ -76,6 +76,7 @@ def register_turtle(request, register_link):
             token.delete()
             return JsonResponse({"id": serverID})   
         else:
+            token.delete()
             return JsonResponse({"error": "Token has expired!"}, status=400)
     return JsonResponse({"error": "Invalid request"}, status=400)
 
