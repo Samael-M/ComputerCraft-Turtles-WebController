@@ -55,8 +55,12 @@ Not a viewable  link, handles registration request from bots
 def register_turtle(request, register_link):
 
     if request.method == "POST":
-        token = Token.objects.get(id=register_link)
-        if(token and not token.expired()):
+        try:
+            token = Token.objects.get(id=register_link)
+        except ObjectDoesNotExist:
+            return JsonResponse({"error": "Invalid token!"}, status=400)
+        
+        if(token.expired()):
             data = json.loads(request.body.decode('utf-8'))
             serverID = str(uuid.uuid4())
 
@@ -72,7 +76,7 @@ def register_turtle(request, register_link):
             token.delete()
             return JsonResponse({"id": serverID})   
         else:
-            return JsonResponse({"error": "Invalid token!"}, status=400)
+            return JsonResponse({"error": "Token has expired!"}, status=400)
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 #curl -X POST http://localhost:8000/controller/register// -H "Content-Type: application/json" \ -d '{"name":"TestBot2", "computerID":"12234", "worldID":0, "status":True}'
