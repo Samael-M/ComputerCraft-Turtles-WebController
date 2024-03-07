@@ -4,6 +4,7 @@ from django.template import loader
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.db import transaction
 
 import uuid
 import json
@@ -52,8 +53,8 @@ def register(request):
 Not a viewable  link, handles registration request from bots
 """
 @csrf_exempt
+@transaction.atomic
 def register_turtle(request, register_link):
-
     if request.method == "POST":
         try:
             token = Token.objects.get(id=register_link)
@@ -62,19 +63,24 @@ def register_turtle(request, register_link):
         
         if(not token.expired()):
             data = json.loads(request.body.decode('utf-8'))
-            serverID = str(uuid.uuid4())
-
-            computer = data.get("computerID")
-            world = data.get("worldID")
-            if(Turtle.objects.filter(worldID=world, computerID=computer).exists()):
-                return JsonResponse({"error": "This turtle is already registered!"}, status=409)
             
-            name = data.get("name")
-            stat = data.get("status")
+            serverID = data.get("serverID")
+            if(serverID):
+                computer = data.get("computerID")
+                world = data.get("worldID")
+                if(Turtle.objects.filter(worldID=world, computerID=computer).exists()):
+                    token.delete()
+                    return JsonResponse({"error": "This turtle is already registered!"}, status=409)
+                
+                name = data.get("name")
+                stat = data.get("status")
 
-            Turtle.objects.create(id = serverID, name=name, worldID=world, computerID=computer, status=stat)
-            token.delete()
-            return JsonResponse({"id": serverID})   
+                token.delete()
+                Turtle.objects.create(id = serverID, name=name, worldID=world, computerID=computer, status=stat)
+                return JsonResponse({"status": "You are now registered with the web server!"})
+            else:
+                serverID = str(uuid.uuid4())
+                return JsonResponse({"id": serverID})
         else:
             token.delete()
             return JsonResponse({"error": "Token has expired!"}, status=400)
