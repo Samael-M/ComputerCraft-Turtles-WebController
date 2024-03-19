@@ -155,4 +155,31 @@ class RegistrationTests(TestCase):
         token_cleared = not Token.objects.filter(id=token.id).exists()
         self.assertTrue(token_cleared)
 
-#   TEST REGISTRATION WHERE HANDSHAKE WORKS BUT REPONSE HAS WRONG ID
+    def test_registration_wrongID_after_handshake(self):
+        """
+        After handshake goes through successfuly, if wrong ID is sent back, registration fails
+        """
+        token = create_token(hours=0, minutes=0, seconds=0)
+        data = {
+            "server": "",
+            "name": "ExampleName",
+            "computerID": 1234,
+            "worldID": 1234,
+            "status": True,
+        }
+
+        #initate handshake 
+        url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
+        handshake = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(handshake.status_code, 200)
+
+        responseData = json.loads(handshake.content.decode('utf-8'))
+        data["serverID"] =  str(uuid.uuid4())
+
+        #finalize registration
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(str(response.content, encoding='utf8'), {"error": "Reponse does not have proper ID"})
+
+        token_cleared = not Token.objects.filter(id=token.id).exists()
+        self.assertTrue(token_cleared)

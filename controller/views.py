@@ -72,6 +72,7 @@ def register_turtle(request, register_link):
             else:
                 sentID = request.session.pop('id', None)
                 if(serverID != sentID):
+                    token.delete()
                     return JsonResponse({"error": "Reponse does not have proper ID"}, status=400)
                 
                 computer = data.get("computerID")
