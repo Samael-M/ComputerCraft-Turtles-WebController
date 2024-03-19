@@ -74,6 +74,7 @@ class RegistrationTests(TestCase):
         #initate handshake 
         url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
         handshake = self.client.post(url, data=json.dumps(hsData), content_type='application/json')
+        self.assertEqual(handshake.status_code, 200)
 
         responseData = json.loads(handshake.content.decode('utf-8'))
         turtleID = responseData["serverID"]
@@ -85,11 +86,11 @@ class RegistrationTests(TestCase):
         }
         response = self.client.post(url, data=json.dumps(idData), content_type='application/json')
 
-        token_cleared = not Token.objects.filter(id=token.id).exists()
-        self.assertTrue(token_cleared)
-
         self.assertEqual(response.status_code, 409)
         self.assertJSONEqual(str(response.content, encoding='utf8'), {"error":"This turtle is already registered!", "type":"serverID duplicate"})
+
+        token_cleared = not Token.objects.filter(id=token.id).exists()
+        self.assertTrue(token_cleared)
     
     def test_registration_duplicate_worldcomputer(self):
         """
@@ -108,6 +109,7 @@ class RegistrationTests(TestCase):
         #initate handshake 
         url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
         handshake = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(handshake.status_code, 200)
 
         responseData = json.loads(handshake.content.decode('utf-8'))
         data["serverID"] =  responseData["serverID"]
@@ -115,12 +117,11 @@ class RegistrationTests(TestCase):
         #finalize registration
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
 
-        token_cleared = not Token.objects.filter(id=token.id).exists()
-        self.assertTrue(token_cleared)
-
         self.assertEqual(response.status_code, 409)
         self.assertJSONEqual(str(response.content, encoding='utf8'), {"error":"This turtle is already registered!", "type":"world and computer ID duplicate"})
-        
+
+        token_cleared = not Token.objects.filter(id=token.id).exists()
+        self.assertTrue(token_cleared)
 
     def test_registration_accepted(self):
         """
@@ -139,19 +140,19 @@ class RegistrationTests(TestCase):
         #initate handshake 
         url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
         handshake = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(handshake.status_code, 200)
 
         responseData = json.loads(handshake.content.decode('utf-8'))
         data["serverID"] =  responseData["serverID"]
 
         #finalize registration
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
-        turtle_registered = Turtle.objects.filter(computerID = data['computerID'], worldID = data['worldID'])
+        turtle_registered = Turtle.objects.filter(id = data["serverID"], computerID = data['computerID'], worldID = data['worldID'])
         self.assertTrue(turtle_registered)
 
         token_cleared = not Token.objects.filter(id=token.id).exists()
         self.assertTrue(token_cleared)
-
-        self.assertEqual(response.status_code, 200)
 
 #   TEST REGISTRATION WHERE HANDSHAKE WORKS BUT REPONSE HAS WRONG ID

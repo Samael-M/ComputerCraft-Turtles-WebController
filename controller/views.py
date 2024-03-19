@@ -70,8 +70,8 @@ def register_turtle(request, register_link):
                 request.session['id'] = serverID
                 return JsonResponse({"serverID": serverID}, status=200)
             else:
-                ID = request.session.pop('code', None)
-                if(serverID != ID):
+                sentID = request.session.pop('id', None)
+                if(serverID != sentID):
                     return JsonResponse({"error": "Reponse does not have proper ID"}, status=400)
                 
                 computer = data.get("computerID")
