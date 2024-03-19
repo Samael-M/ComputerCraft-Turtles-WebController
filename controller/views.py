@@ -93,5 +93,3 @@ def register_turtle(request, register_link):
             token.delete()
             return JsonResponse({"error": "Token has expired!"}, status=400)
     return JsonResponse({"error": "Invalid request"}, status=400)
-
-#curl -X POST http://localhost:8000/controller/register// -H "Content-Type: application/json" \ -d '{"name":"TestBot2", "computerID":"12234", "worldID":0, "status":True}'
