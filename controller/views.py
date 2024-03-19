@@ -65,22 +65,30 @@ def register_turtle(request, register_link):
             data = json.loads(request.body.decode('utf-8'))
             
             serverID = data.get("serverID")
-            if(serverID):
+            if(not serverID):
+                serverID = str(uuid.uuid4())
+                request.session['id'] = serverID
+                return JsonResponse({"serverID": serverID}, status=200)
+            else:
+                ID = request.session.pop('code', None)
+                if(serverID != ID):
+                    return JsonResponse({"error": "Reponse does not have proper ID"}, status=400)
+                
                 computer = data.get("computerID")
                 world = data.get("worldID")
-                if(Turtle.objects.filter(worldID=world, computerID=computer).exists()):
+                if(Turtle.objects.filter(id=serverID).exists()):
                     token.delete()
-                    return JsonResponse({"error": "This turtle is already registered!"}, status=409)
+                    return JsonResponse({"error":"This turtle is already registered!", "type":"serverID duplicate"}, status=409)
+                elif(Turtle.objects.filter(worldID=world, computerID=computer).exists()):
+                    token.delete()
+                    return JsonResponse({"error":"This turtle is already registered!", "type":"world and computer ID duplicate"}, status=409)
                 
                 name = data.get("name")
                 stat = data.get("status")
 
                 token.delete()
                 Turtle.objects.create(id = serverID, name=name, worldID=world, computerID=computer, status=stat)
-                return JsonResponse({"status": "You are now registered with the web server!"})
-            else:
-                serverID = str(uuid.uuid4())
-                return JsonResponse({"id": serverID})
+                return JsonResponse({"status": "You are now registered with the web server!"}, status=200)
         else:
             token.delete()
             return JsonResponse({"error": "Token has expired!"}, status=400)
