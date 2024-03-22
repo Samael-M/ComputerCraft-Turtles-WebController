@@ -11,7 +11,6 @@ class Turtle(models.Model): # Track individual turtles
     worldID = models.IntegerField(default=0, unique=False) # ID of world turtle is in
 
     name = models.CharField(max_length=20)
-    status = models.BooleanField() # true = online, false = offline
 
     class Meta:
         unique_together = (('computerID', 'worldID'),) #neither indivudally should necessarily be unique, but together they must
