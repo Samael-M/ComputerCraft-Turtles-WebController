@@ -88,7 +88,7 @@ def register_turtle(request, register_link):
                 stat = data.get("status")
 
                 token.delete()
-                Turtle.objects.create(id = serverID, name=name, worldID=world, computerID=computer, status=stat)
+                Turtle.objects.create(id = serverID, name=name, worldID=world, computerID=computer)
                 return JsonResponse({"status": "You are now registered with the web server!"}, status=200)
         else:
             token.delete()

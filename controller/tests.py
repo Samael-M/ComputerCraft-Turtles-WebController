@@ -68,7 +68,6 @@ class RegistrationTests(TestCase):
             "name": "ExampleName",
             "computerID": 1234,
             "worldID": 1234,
-            "status": True,
         }
         
         #initate handshake 
@@ -78,7 +77,7 @@ class RegistrationTests(TestCase):
 
         responseData = json.loads(handshake.content.decode('utf-8'))
         turtleID = responseData["serverID"]
-        Turtle.objects.create(id=turtleID, name=hsData['name'], worldID=hsData['worldID'], computerID=hsData['computerID'], status=hsData['status'])
+        Turtle.objects.create(id=turtleID, name=hsData['name'], worldID=hsData['worldID'], computerID=hsData['computerID'])
 
         #finalize registration
         idData = {
@@ -102,9 +101,8 @@ class RegistrationTests(TestCase):
             "name": "ExampleName",
             "computerID": 1234,
             "worldID": 1234,
-            "status": True,
         }
-        Turtle.objects.create(id=uuid.uuid4(), name=data['name'], worldID=data['worldID'], computerID=data['computerID'], status=data['status'])
+        Turtle.objects.create(id=uuid.uuid4(), name=data['name'], worldID=data['worldID'], computerID=data['computerID'])
 
         #initate handshake 
         url = reverse("controller:register_turtle", kwargs={"register_link": token.id})
@@ -134,7 +132,6 @@ class RegistrationTests(TestCase):
             "name": "ExampleName",
             "computerID": 1234,
             "worldID": 1234,
-            "status": True,
         }
 
         #initate handshake 
@@ -165,7 +162,6 @@ class RegistrationTests(TestCase):
             "name": "ExampleName",
             "computerID": 1234,
             "worldID": 1234,
-            "status": True,
         }
 
         #initate handshake 
